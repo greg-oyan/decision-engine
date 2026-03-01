@@ -7,46 +7,187 @@
   <meta name="description" content="Force System 2 thinking. Track your forecast calibration over time.">
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
-  <div class="container">
+  <div class="app-container">
+    <div class="container">
 
-    <header>
-      <h1>Decision Friction Engine</h1>
-      <p class="subtitle">Force System 2. Track calibration.</p>
-    </header>
+      <header>
+        <h1>Decision Friction Engine</h1>
+        <p class="subtitle">Force System 2. Track calibration.</p>
+      </header>
 
-    <!-- Tab bar -->
-    <nav class="tab-bar">
-      <button class="tab-btn active" data-tab="new-entry">+ New Entry</button>
-      <button class="tab-btn" data-tab="entries">My Decisions</button>
-      <button class="tab-btn" data-tab="analytics">Analytics</button>
-    </nav>
+      <!-- Tab bar -->
+      <nav class="tab-bar">
+        <button class="tab-btn active" data-tab="new-entry">+ New Entry</button>
+        <button class="tab-btn" data-tab="entries">My Decisions</button>
+        <button class="tab-btn" data-tab="analytics">Analytics</button>
+      </nav>
 
-    <!-- ========== VIEW: NEW ENTRY ========== -->
-    <div id="view-new-entry" class="view">
-      <div class="card">
+      <!-- ========== VIEW: NEW ENTRY ========== -->
+      <div id="view-new-entry" class="view">
+        <div class="card">
 
-        <!-- Section 1: The Claim -->
-        <div class="form-section">
-          <h3 class="form-section-title">The Claim</h3>
+          <!-- Section 1: The Claim -->
+          <div class="form-section">
+            <h3 class="form-section-title">The Claim</h3>
 
-          <div class="form-group">
-            <label for="entryTitle">Title</label>
-            <input type="text" id="entryTitle" placeholder="Short name for this decision" maxlength="200">
-            <span class="field-error" id="entryTitle-error"></span>
-          </div>
-
-          <div class="form-group">
-            <label for="entryClaim">Claim statement (measurable outcome)</label>
-            <textarea id="entryClaim" rows="2" placeholder='e.g. "Product X generates >= $500K ARR within 90 days of launch"' maxlength="500"></textarea>
-            <span class="field-error" id="entryClaim-error"></span>
-          </div>
-
-          <div class="form-row">
             <div class="form-group">
-              <label for="entryCategory">Category</label>
-              <select id="entryCategory">
-                <option value="">Select...</option>
+              <label for="entryTitle">Title</label>
+              <input type="text" id="entryTitle" placeholder="Short name for this decision" maxlength="200">
+              <span class="field-error" id="entryTitle-error"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="entryClaim">Claim statement (measurable outcome)</label>
+              <textarea id="entryClaim" rows="2" placeholder='e.g. "Product X generates >= $500K ARR within 90 days of launch"' maxlength="500"></textarea>
+              <span class="field-error" id="entryClaim-error"></span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="entryCategory">Category</label>
+                <select id="entryCategory">
+                  <option value="">Select...</option>
+                  <option value="work">Work</option>
+                  <option value="finance">Finance</option>
+                  <option value="theology">Theology</option>
+                  <option value="relationships">Relationships</option>
+                  <option value="health">Health</option>
+                  <option value="other">Other</option>
+                </select>
+                <span class="field-error" id="entryCategory-error"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="resolveBy">Resolve by</label>
+                <input type="date" id="resolveBy">
+                <span class="field-error" id="resolveBy-error"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Your Forecast -->
+          <div class="form-section">
+            <h3 class="form-section-title">Your Forecast</h3>
+
+            <div class="form-group">
+              <label class="label-with-tooltip">
+                Probability this happens
+                <button type="button" class="tooltip-trigger" data-glossary="forecastProbability">?</button>
+              </label>
+              <div class="slider-group">
+                <input type="range" id="forecastProbability" min="0" max="100" value="50" class="slider">
+                <span class="slider-value" id="probValue">50%</span>
+              </div>
+              <span class="slider-label-text" id="probLabel">Coin flip</span>
+            </div>
+
+            <div class="form-group">
+              <label class="label-with-tooltip">
+                Confidence in this estimate
+                <button type="button" class="tooltip-trigger" data-glossary="forecastConfidence">?</button>
+              </label>
+              <div class="slider-group">
+                <input type="range" id="forecastConfidence" min="0" max="100" value="50" class="slider">
+                <span class="slider-value" id="confValue">50%</span>
+              </div>
+              <span class="slider-label-text" id="confLabel">Low &mdash; weak evidence</span>
+            </div>
+          </div>
+
+          <!-- Section 3: Assumptions -->
+          <div class="form-section">
+            <h3 class="form-section-title">Assumptions <span class="required-hint">(minimum 3)</span></h3>
+            <div id="assumptions">
+              <!-- Dynamic rows added by JS -->
+            </div>
+            <button type="button" id="addAssumption" class="btn-add-row">+ Add assumption</button>
+            <span class="field-error" id="assumptions-error"></span>
+          </div>
+
+          <!-- Section 4: Reality Check -->
+          <div class="form-section">
+            <h3 class="form-section-title">Reality Check</h3>
+
+            <div class="form-group">
+              <label class="label-with-tooltip">
+                Base rate estimate (optional, 0&ndash;100%)
+                <button type="button" class="tooltip-trigger" data-glossary="baseRate">?</button>
+              </label>
+              <input type="number" id="baseRateEstimate" min="0" max="100" step="1" placeholder="e.g. 30">
+            </div>
+
+            <div class="form-group">
+              <label for="baseRateReasoning">Why this base rate? (optional)</label>
+              <textarea id="baseRateReasoning" rows="2" placeholder="e.g. Historically 3 of 10 launches hit target in 90 days" maxlength="500"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="label-with-tooltip">
+                Failure modes / counterfactuals
+                <span class="required-hint">(minimum 2)</span>
+                <button type="button" class="tooltip-trigger" data-glossary="counterfactuals">?</button>
+              </label>
+            </div>
+
+            <div id="counterfactuals">
+              <!-- Dynamic rows added by JS -->
+            </div>
+            <button type="button" id="addCounterfactual" class="btn-add-row">+ Add failure mode</button>
+            <span class="field-error" id="counterfactuals-error"></span>
+          </div>
+
+          <!-- Section 5: Incentives -->
+          <div class="form-section">
+            <h3 class="form-section-title label-with-tooltip">
+              Incentives
+              <button type="button" class="tooltip-trigger" data-glossary="incentives">?</button>
+            </h3>
+
+            <div class="form-group">
+              <label for="stakeholders">Key stakeholders</label>
+              <textarea id="stakeholders" rows="2" placeholder="Who has skin in the game? Who is providing the info you're relying on?" maxlength="500"></textarea>
+              <span class="field-error" id="stakeholders-error"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="whoBenefitsIfWrong">Who benefits if you're wrong?</label>
+              <textarea id="whoBenefitsIfWrong" rows="2" placeholder="Competitor? A team that was right to be cautious?" maxlength="500"></textarea>
+              <span class="field-error" id="whoBenefitsIfWrong-error"></span>
+            </div>
+          </div>
+
+          <!-- Section 6: Pre-commitment -->
+          <div class="form-section">
+            <h3 class="form-section-title">Pre-commitment</h3>
+
+            <div class="form-group">
+              <label for="evidenceToChangeMind">What evidence would change your mind?</label>
+              <textarea id="evidenceToChangeMind" rows="2" placeholder="e.g. If beta conversion < 5% by July, this forecast is too high" maxlength="500"></textarea>
+              <span class="field-error" id="evidenceToChangeMind-error"></span>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" id="saveEntry" class="btn btn-primary btn-lg">Save Decision</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ========== VIEW: MY DECISIONS ========== -->
+      <div id="view-entries" class="view hidden">
+
+        <div class="card">
+          <h2 class="section-title">Decisions</h2>
+
+          <!-- List container -->
+          <div id="entryListContainer">
+            <div class="filters-bar">
+              <input type="text" id="searchInput" placeholder="Search title or claim..." class="search-input">
+              <select id="categoryFilter">
+                <option value="">All categories</option>
                 <option value="work">Work</option>
                 <option value="finance">Finance</option>
                 <option value="theology">Theology</option>
@@ -54,244 +195,117 @@
                 <option value="health">Health</option>
                 <option value="other">Other</option>
               </select>
-              <span class="field-error" id="entryCategory-error"></span>
+              <select id="statusFilter">
+                <option value="all">Open + Resolved</option>
+                <option value="open">Open only</option>
+                <option value="resolved">Resolved only</option>
+                <option value="archived">Archived</option>
+              </select>
             </div>
-            <div class="form-group">
-              <label for="resolveBy">Resolve by</label>
-              <input type="date" id="resolveBy">
-              <span class="field-error" id="resolveBy-error"></span>
+
+            <div id="entryListContent">
+              <!-- Populated by JS -->
             </div>
           </div>
-        </div>
 
-        <!-- Section 2: Your Forecast -->
-        <div class="form-section">
-          <h3 class="form-section-title">
-            Your Forecast
-          </h3>
+          <!-- Detail container (hidden by default) -->
+          <div id="entryDetail" class="hidden">
+            <button id="btnBack" class="btn btn-secondary">&larr; Back to list</button>
 
-          <div class="form-group">
-            <label class="label-with-tooltip">
-              Probability this happens
-              <button type="button" class="tooltip-trigger" data-glossary="forecastProbability">?</button>
-            </label>
-            <div class="slider-group">
-              <input type="range" id="forecastProbability" min="0" max="100" value="50" class="slider">
-              <span class="slider-value" id="probValue">50%</span>
+            <div class="card">
+              <div id="entryDetailContent">
+                <!-- Populated by JS -->
+              </div>
+              <div id="entryDetailActions" class="detail-actions">
+                <!-- Populated by JS -->
+              </div>
             </div>
-            <span class="slider-label-text" id="probLabel">Coin flip</span>
-          </div>
 
-          <div class="form-group">
-            <label class="label-with-tooltip">
-              Confidence in this estimate
-              <button type="button" class="tooltip-trigger" data-glossary="forecastConfidence">?</button>
-            </label>
-            <div class="slider-group">
-              <input type="range" id="forecastConfidence" min="0" max="100" value="50" class="slider">
-              <span class="slider-value" id="confValue">50%</span>
+            <div id="resolveFormContainer" class="hidden">
+              <!-- Resolve form injected by JS -->
             </div>
-            <span class="slider-label-text" id="confLabel">Low &mdash; weak evidence</span>
           </div>
-        </div>
-
-        <!-- Section 3: Assumptions -->
-        <div class="form-section">
-          <h3 class="form-section-title">Assumptions <span class="required-hint">(minimum 3)</span></h3>
-          <div id="assumptions">
-            <!-- Dynamic rows added by JS -->
-          </div>
-          <button type="button" id="addAssumption" class="btn-add-row">+ Add assumption</button>
-          <span class="field-error" id="assumptions-error"></span>
-        </div>
-
-        <!-- Section 4: Reality Check -->
-        <div class="form-section">
-          <h3 class="form-section-title">Reality Check</h3>
-
-          <div class="form-group">
-            <label class="label-with-tooltip">
-              Base rate estimate (optional, 0&ndash;100%)
-              <button type="button" class="tooltip-trigger" data-glossary="baseRate">?</button>
-            </label>
-            <input type="number" id="baseRateEstimate" min="0" max="100" step="1" placeholder="e.g. 30">
-          </div>
-
-          <div class="form-group">
-            <label for="baseRateReasoning">Why this base rate? (optional)</label>
-            <textarea id="baseRateReasoning" rows="2" placeholder="e.g. Historically 3 of 10 launches hit target in 90 days" maxlength="500"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label class="label-with-tooltip">
-              Failure modes / counterfactuals
-              <span class="required-hint">(minimum 2)</span>
-              <button type="button" class="tooltip-trigger" data-glossary="counterfactuals">?</button>
-            </label>
-          </div>
-          <div id="counterfactuals">
-            <!-- Dynamic rows added by JS -->
-          </div>
-          <button type="button" id="addCounterfactual" class="btn-add-row">+ Add failure mode</button>
-          <span class="field-error" id="counterfactuals-error"></span>
-        </div>
-
-        <!-- Section 5: Incentives -->
-        <div class="form-section">
-          <h3 class="form-section-title label-with-tooltip">
-            Incentives
-            <button type="button" class="tooltip-trigger" data-glossary="incentives">?</button>
-          </h3>
-
-          <div class="form-group">
-            <label for="stakeholders">Key stakeholders</label>
-            <textarea id="stakeholders" rows="2" placeholder="Who has skin in the game? Who is providing the info you're relying on?" maxlength="500"></textarea>
-            <span class="field-error" id="stakeholders-error"></span>
-          </div>
-
-          <div class="form-group">
-            <label for="whoBenefitsIfWrong">Who benefits if you're wrong?</label>
-            <textarea id="whoBenefitsIfWrong" rows="2" placeholder="Competitor? A team that was right to be cautious?" maxlength="500"></textarea>
-            <span class="field-error" id="whoBenefitsIfWrong-error"></span>
-          </div>
-        </div>
-
-        <!-- Section 6: Pre-commitment -->
-        <div class="form-section">
-          <h3 class="form-section-title">Pre-commitment</h3>
-
-          <div class="form-group">
-            <label for="evidenceToChangeMind">What evidence would change your mind?</label>
-            <textarea id="evidenceToChangeMind" rows="2" placeholder="e.g. If beta conversion < 5% by July, this forecast is too high" maxlength="500"></textarea>
-            <span class="field-error" id="evidenceToChangeMind-error"></span>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" id="saveEntry" class="btn btn-primary btn-lg">Save Decision</button>
         </div>
 
       </div>
-    </div>
 
-    <!-- ========== VIEW: MY DECISIONS ========== -->
-    <div id="view-entries" class="view hidden">
+      <!-- ========== VIEW: ANALYTICS ========== -->
+      <div id="view-analytics" class="view hidden">
 
-      <!-- List container -->
-      <div id="entryListContainer">
-        <div class="filters-bar">
-          <input type="text" id="searchInput" placeholder="Search title or claim..." class="search-input">
-          <select id="categoryFilter">
-            <option value="">All categories</option>
-            <option value="work">Work</option>
-            <option value="finance">Finance</option>
-            <option value="theology">Theology</option>
-            <option value="relationships">Relationships</option>
-            <option value="health">Health</option>
-            <option value="other">Other</option>
-          </select>
-          <select id="statusFilter">
-            <option value="all">Open + Resolved</option>
-            <option value="open">Open only</option>
-            <option value="resolved">Resolved only</option>
-            <option value="archived">Archived</option>
-          </select>
+        <div class="card">
+          <h2 class="section-title">Analytics</h2>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <span class="stat-number" id="statTotal">0</span>
+              <span class="stat-label">Total entries</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-number" id="statResolved">0</span>
+              <span class="stat-label">Resolved</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-number" id="statAvgBrier">&mdash;</span>
+              <span class="stat-label label-with-tooltip">
+                Avg Brier
+                <button type="button" class="tooltip-trigger" data-glossary="brierScore">?</button>
+              </span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-number" id="statBinaryCount">0</span>
+              <span class="stat-label">Binary resolved</span>
+            </div>
+          </div>
         </div>
-        <div id="entryListContent">
+
+        <div class="card" id="calibrationChartContainer">
+          <h3 class="card-title label-with-tooltip">
+            Calibration Chart
+            <button type="button" class="tooltip-trigger" data-glossary="calibration">?</button>
+          </h3>
+          <div class="chart-container">
+            <canvas id="calibrationChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card" id="calibrationTableContainer">
+          <h3 class="card-title label-with-tooltip">
+            Calibration by Bin
+            <button type="button" class="tooltip-trigger" data-glossary="overconfidenceGap">?</button>
+          </h3>
+          <div class="table-responsive">
+            <table class="cal-table">
+              <thead>
+                <tr>
+                  <th>Bin</th>
+                  <th>Count</th>
+                  <th>Avg forecast</th>
+                  <th>Hit rate</th>
+                  <th>Gap</th>
+                </tr>
+              </thead>
+              <tbody id="calibrationTableBody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="notableDecisions">
           <!-- Populated by JS -->
         </div>
+
       </div>
 
-      <!-- Detail container (hidden by default) -->
-      <div id="entryDetail" class="hidden">
-        <button id="btnBack" class="btn btn-back">&larr; Back to list</button>
-        <div class="card">
-          <div id="entryDetailContent">
-            <!-- Populated by JS -->
-          </div>
-          <div id="entryDetailActions" class="detail-actions">
-            <!-- Populated by JS -->
-          </div>
-        </div>
-        <div id="resolveFormContainer" class="hidden">
-          <!-- Resolve form injected by JS -->
-        </div>
-      </div>
+      <!-- Scripts -->
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+      <script src="js/constants.js"></script>
+      <script src="js/store.js"></script>
+      <script src="js/analytics.js"></script>
+      <script src="js/charts.js"></script>
+      <script src="js/ui.js"></script>
 
     </div>
-
-    <!-- ========== VIEW: ANALYTICS ========== -->
-    <div id="view-analytics" class="view hidden">
-
-      <div class="stats-row">
-        <div class="stat-card">
-          <span class="stat-number" id="statTotal">0</span>
-          <span class="stat-label">Total entries</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number" id="statResolved">0</span>
-          <span class="stat-label">Resolved</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number" id="statAvgBrier">&mdash;</span>
-          <span class="stat-label label-with-tooltip">
-            Avg Brier
-            <button type="button" class="tooltip-trigger" data-glossary="brierScore">?</button>
-          </span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number" id="statBinaryCount">0</span>
-          <span class="stat-label">Binary resolved</span>
-        </div>
-      </div>
-
-      <div class="card" id="calibrationChartContainer">
-        <h3 class="card-title label-with-tooltip">
-          Calibration Chart
-          <button type="button" class="tooltip-trigger" data-glossary="calibration">?</button>
-        </h3>
-        <div class="chart-container">
-          <canvas id="calibrationChart"></canvas>
-        </div>
-      </div>
-
-      <div class="card" id="calibrationTableContainer">
-        <h3 class="card-title label-with-tooltip">
-          Calibration by Bin
-          <button type="button" class="tooltip-trigger" data-glossary="overconfidenceGap">?</button>
-        </h3>
-        <div class="table-responsive">
-          <table class="cal-table">
-            <thead>
-              <tr>
-                <th>Bin</th>
-                <th>Count</th>
-                <th>Avg forecast</th>
-                <th>Hit rate</th>
-                <th>Gap</th>
-              </tr>
-            </thead>
-            <tbody id="calibrationTableBody">
-              <!-- Populated by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="notableDecisions">
-        <!-- Populated by JS -->
-      </div>
-
-    </div>
-
   </div>
-
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="js/constants.js"></script>
-  <script src="js/store.js"></script>
-  <script src="js/analytics.js"></script>
-  <script src="js/charts.js"></script>
-  <script src="js/ui.js"></script>
 </body>
 </html>
